@@ -124,7 +124,7 @@ export const authorizeUser: Middleware = async (ctx, next) => {
   }
 
   const user = await db.user.findUnique({
-    where: { id: ctx.state.userId },
+    where: { id: ctx.state.user.userId },
   });
 
   if (!user) {

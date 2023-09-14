@@ -23,8 +23,9 @@ app.use(serve(staticDir));
 
 router.use('/api', api.routes());
 
-if (!fs.existsSync(staticDir)) {
-  fs.mkdirSync(staticDir);
+if (!fs.existsSync(`${staticDir}/images`) && `${staticDir}/videos`) {
+  fs.mkdirSync(`${staticDir}/images`);
+  fs.mkdirSync(`${staticDir}/videos`);
 }
 
 app.listen(4000, () => {

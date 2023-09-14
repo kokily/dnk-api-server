@@ -54,7 +54,8 @@ hanuri.get('/', async (ctx) => {
   const { year, cursor } = ctx.query as QueryType;
 
   try {
-    const cursorObj = cursor === '' ? undefined : { id: cursor };
+    const page = cursor ?? '';
+    const cursorObj = page === '' ? undefined : { id: page };
     const limit = 9;
 
     const hanuries = await db.hanuri.findMany({
@@ -62,7 +63,7 @@ hanuri.get('/', async (ctx) => {
         year,
       },
       cursor: cursorObj,
-      skip: cursor !== '' ? 1 : 0,
+      skip: page !== '' ? 1 : 0,
       take: limit,
     });
 

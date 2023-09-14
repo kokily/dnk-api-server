@@ -5,7 +5,8 @@ import logger from 'koa-logger';
 import serve from 'koa-static';
 import path from 'path';
 import fs from 'fs';
-import { cors, jwtMiddleware } from './libs/middlewares';
+import cors from '@koa/cors';
+import { jwtMiddleware } from './libs/middlewares';
 import api from './api';
 
 const app = new Koa();
@@ -13,7 +14,12 @@ const router = new Router();
 
 const staticDir = path.resolve(process.cwd(), 'uploads');
 
-app.use(cors);
+app.use(
+  cors({
+    origin: 'http://localhost:3000',
+    credentials: true,
+  }),
+);
 app.use(logger());
 app.use(bodyParser());
 app.use(jwtMiddleware);

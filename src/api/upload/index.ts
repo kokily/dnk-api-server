@@ -19,7 +19,7 @@ upload.post('/image', authorizeUser, async (ctx) => {
 
     const target = await form.parse(ctx.req);
 
-    ctx.body = target[1];
+    ctx.body = target;
   } catch (err: any) {
     ctx.throw(500, err);
   }
@@ -42,9 +42,7 @@ upload.post('/video', authorizeUser, async (ctx) => {
       console.log(bytesReceived, bytesExpected);
     });
 
-    const target = await form.parse(ctx.req);
-
-    ctx.body = target[1];
+    form.parse(ctx.req);
   } catch (err: any) {
     ctx.throw(500, err);
   }

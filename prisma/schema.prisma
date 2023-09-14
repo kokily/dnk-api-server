@@ -1,0 +1,35 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Hanuri {
+  id        String   @id @default(uuid())
+  title     String   @unique
+  body      String
+  tags      String[]
+  thumbnail String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model User {
+  id        String   @id @default(uuid())
+  username  String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  token     String?
+}
+
+model Video {
+  id        String   @id
+  title     String   @unique
+  series    String
+  source    String
+  createdAt DateTime @default(now())
+}

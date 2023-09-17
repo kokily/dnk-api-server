@@ -1,39 +1,47 @@
-import Koa from 'koa';
-import Router from 'koa-router';
-import bodyParser from 'koa-bodyparser';
-import logger from 'koa-logger';
-import serve from 'koa-static';
-import path from 'path';
+import 'dotenv/config';
+
+import https from 'https';
+import http from 'http';
 import fs from 'fs';
-import cors from '@koa/cors';
-import { jwtMiddleware } from './libs/middlewares';
-import api from './api';
 
-const app = new Koa();
-const router = new Router();
+import app from './app';
 
-const staticDir = path.resolve(process.cwd(), 'uploads');
+async function _bootStrap() {
+  try {
+    const configurations = {
+      production: { ssl: true, port: 443, hostname: 'api.dnkdream.com' },
+      development: { ssl: false, port: 4000, hostname: 'localhost' },
+    };
+    const environment = process.env.NODE_ENV || 'production';
+    const config = configurations[environment];
 
-app.use(
-  cors({
-    origin: 'http://localhost:3000',
-    credentials: true,
-  }),
-);
-app.use(logger());
-app.use(bodyParser());
-app.use(jwtMiddleware);
-app.use(router.routes());
-app.use(router.allowedMethods());
-app.use(serve(staticDir));
+    let httpServer;
+    let httpsServer;
 
-router.use('/api', api.routes());
+    if (config.ssl) {
+      httpServer = http.createServer(app.callback());
+      httpsServer = https.createServer(
+        {
+          key: fs.readFileSync(`${process.env.SSL_KEY}`),
+          cert: fs.readFileSync(`${process.env.SSL_CERT}`),
+        },
+        app.callback(),
+      );
 
-if (!fs.existsSync(`${staticDir}/images`) && `${staticDir}/videos`) {
-  fs.mkdirSync(`${staticDir}/images`);
-  fs.mkdirSync(`${staticDir}/videos`);
+      httpServer.listen(80);
+      httpsServer.listen(config.port, () => {
+        console.log(`Dnk Dreams Backend server on ${config.port}`);
+      });
+    } else {
+      httpServer = http.createServer(app.callback());
+
+      httpServer.listen(config.port, () => {
+        console.log(`Dnk dreams Development server on ${config.port}`);
+      });
+    }
+  } catch (err: any) {
+    console.error(err);
+  }
 }
 
-app.listen(4000, () => {
-  console.log('Koa server on 4000 port');
-});
+_bootStrap();

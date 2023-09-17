@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "NODE_ENV=development ts-node-dev --respawn src/server.ts"
+    "dev": "NODE_ENV=development ts-node-dev --respawn src/server.ts",
+    "build": "npx tsc",
+    "start": "NODE_ENV=production node dist/server"
   },
   "keywords": [],
   "author": "",
@@ -14,6 +16,7 @@
     "@prisma/client": "^5.3.0",
     "async-busboy": "^1.1.0",
     "bcryptjs": "^2.4.3",
+    "dotenv": "^16.3.1",
     "formidable": "^3.5.1",
     "joi": "^17.10.1",
     "jsonwebtoken": "^9.0.2",
@@ -26,6 +29,7 @@
   "devDependencies": {
     "@types/async-busboy": "^1.1.1",
     "@types/bcryptjs": "^2.4.3",
+    "@types/dotenv": "^8.2.0",
     "@types/formidable": "^3.4.2",
     "@types/joi": "^17.2.3",
     "@types/jsonwebtoken": "^9.0.2",

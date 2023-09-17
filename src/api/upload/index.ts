@@ -2,6 +2,7 @@ import Router from 'koa-router';
 import { IncomingForm } from 'formidable';
 import { authorizeUser } from '../../libs/middlewares';
 import path from 'path';
+import db from '../../libs/database';
 
 const upload = new Router();
 
@@ -28,6 +29,8 @@ upload.post('/image', authorizeUser, async (ctx) => {
 upload.post('/video', authorizeUser, async (ctx) => {
   try {
     const uploadDir = path.join(process.cwd(), 'uploads/videos');
+    let fileName = '';
+
     const form = new IncomingForm({
       uploadDir,
       keepExtensions: true,
@@ -38,11 +41,25 @@ upload.post('/video', authorizeUser, async (ctx) => {
       console.log(err);
     });
 
-    form.on('progress', (bytesReceived, bytesExpected) => {
-      console.log(bytesReceived, bytesExpected);
+    form.on('fileBegin', (name, file) => {
+      file.filepath = `${uploadDir}/${file.originalFilename}`;
+      fileName = file.originalFilename!;
     });
 
-    form.parse(ctx.req);
+    form.on('progress', (bytesReceived, bytesExpected) => {
+      let percent = ((bytesReceived / bytesExpected) * 100) | 0;
+      console.log(`Video Uploading: ${percent} %`);
+    });
+
+    await form.parse(ctx.req);
+    const video = await db.video.create({
+      data: {
+        title: fileName.split('.')[0],
+        source: fileName,
+      },
+    });
+
+    ctx.body = video;
   } catch (err: any) {
     ctx.throw(500, err);
   }

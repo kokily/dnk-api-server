@@ -28,9 +28,8 @@ model User {
 }
 
 model Video {
-  id        String   @id
+  id        String   @id @default(uuid())
   title     String   @unique
-  series    String
   source    String
   createdAt DateTime @default(now())
 }
